@@ -1,0 +1,57 @@
+---
+title: "Introduction to Data Science"
+subtitle: "Problem Set 4"
+editor: visual
+author: "Alicia Helfrich and Allie Gleich"
+format: 
+  pdf:
+    code-line-numbers: false
+  html: 
+    code-line-numbers: false
+    self-contained: true
+urlcolor: blue
+geometry: margin=1.5in
+---
+
+```{r}
+#\| label: rmarkdown-setup #\| echo: false #\| include: false
+
+library(tidyverse)
+library(knitr)
+library(ggplot2)
+library(janitor)
+library(haven)
+
+```
+
+# Problem Set 4: General Social Survey Analysis
+
+```{r}
+
+base_url <- "https://gss.norc.org/Documents/sas/"
+week_url <- "GSS_sas.zip"
+pulse_url <- paste0(base_url, week_url)
+
+dir.create("data")
+
+download.file(
+pulse_url,
+destfile = "data/GSS_sas.zip",
+mode = "wb"
+)
+
+zip_file <- "data/GSS_sas.zip"
+
+unzip(zip_file, exdir= "data")
+
+gss <- (read_sas("data/GSS_sas/gss7222_r1.sas7bdat")) %>% 
+  select(YEAR,ID,WRKSTAT,MARITAL,AGE,EDUC,SEX,RACE,BORN,GRANBORN,INCOME,PARTYID,NATAID,RELIG,HAPPY,CONEDUC,MYSKILLS,HISPANIC,BALLOT,ETHWORLD1,ETHWORLD2,ETHWORLD3,
+      ETHWORLD4,ETHWORLD5,ETHWORLD6,ETHWORLD7,ETHWORLD8,ETHWORLD9) %>% 
+    filter(YEAR == 2021 | YEAR == 2022) 
+
+clean_names(gss)
+```
+
+The following dataset is pulled from the NORC General Social Survey for the years 2021 and 2022. Variables related to race, ethnicity, employment status, family income, immigration status, political party affiliation, perceptions of foreign spending, overall happiness, application of skills within the workplace, and ancestral continent of origin were selected.
+
+Ideas for graphs - geom_density()income and race - dot plot with income levels, colored by happiness levels - column chart of perceptions foreign percentages of responses split by continent of origin - happiness and application of skills within the workplace - 4 individual pie charts for each happiness level https://r-graph-gallery.com/piechart-ggplot2.html
