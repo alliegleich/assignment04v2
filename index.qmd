@@ -56,13 +56,20 @@ clean_names(gss)
 
 The following dataset is pulled from the annual NORC General Social Survey for the year 2022. The survey collects a range of data based on social characteristics and attitudes from a representative sample of the US population. We were interested in looking at exploring how particular variables, such as years of education, income, age, religion may interact with reported happiness levels of respondents.
 
-## Data Visualization #1: Comparing Happiness Levels between 2021 and 2022
+## Data Visualization #1: Exploring Happiness Levels in 2022
 
 ```{r}
+ggplot(data = gss, aes(x = HAPPY)) + geom_histogram(position = "dodge", width = 10.5, na.rm = TRUE) +  scale_x_continuous(breaks = c(1, 2, 3)) + scale_y_continuous(limits = c(0, NA)) + theme_classic() +
+  labs(
+    title = "2021 Levels of Happiness",
+    x = "Happiness Level",
+    y = "Frequency",
+    caption = "Data from the General Social Survey")
 
-#Allie inserts code here
 
 ```
+
+The above graph shows that the majority of the respondents ranked their happiness at a 2 out of 3, three being the most happy. The least amount of people ranked themselves at 1, coded to represent "Not Too Happy", which shows people are generally happy. To continue making public policy decisions that are targeted at improving people's overall happiness, we should further explore the respondents that ranked themselves as a 1 and see if there are other correlated variables that may be leading to this.
 
 ## Data Visualization #2: Investigating a potential relationship between labor force status and happiness levels
 
