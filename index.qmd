@@ -59,9 +59,9 @@ The following dataset is pulled from the annual NORC General Social Survey for t
 ## Data Visualization #1: Exploring Happiness Levels in 2022
 
 ```{r}
-ggplot(data = gss, aes(x = HAPPY)) + geom_histogram(position = "dodge", width = 10.5, na.rm = TRUE) +  scale_x_continuous(breaks = c(1, 2, 3)) + scale_y_continuous(limits = c(0, NA)) + theme_classic() +
+ggplot(data = gss, aes(x = HAPPY)) + geom_histogram(position = "dodge", width = 10.5, na.rm = TRUE) +  scale_x_continuous(breaks = c(1, 2, 3)) + scale_y_continuous(limits = c(0, NA)) + theme_classic() + geom_text(aes(x =2,y = 2010, label = "median", size = 0.5, show.legend = FALSE)) +
   labs(
-    title = "2021 Levels of Happiness",
+    title = "2022 Levels of Happiness",
     x = "Happiness Level",
     y = "Frequency",
     caption = "Data from the General Social Survey")
@@ -137,7 +137,7 @@ ggplot(aes(x = MARITAL, y = HAPPY)) + geom_point(aes(size = n)) + scale_x_contin
 
 ```
 
-The above graph shows that for all marital statuses, the majority of respondents ranked their happiness at a 2. This aligns with the histogram above, which shows that the majority of respondents in the General Social Survey ranked their happiness at a 2, as well. An interesting finding, however, is that the plot above reveals that for all marital statuses, except for "married", the second most selected happiness rating was a 3, meaning very happy. For those in the "married" category, the second highest ranked happiness rating was 1, being very unhappy. This reveals that there may be a slight negative correlation between being married and being happy. All in all, there are no strong correlations above, which is good news for public policy makers, who don't need to focus on marital status when trying to improve the well being of their constituents.
+The above graph shows that for all marital statuses, the majority of respondents ranked their happiness at a 2. This aligns with Data Visualization #1, which shows that the median happiness level in the General Social Survey is a 2. An interesting finding, however, is that the plot above reveals that for all marital statuses, except for "married", the second most selected happiness rating was a 3, meaning very happy. For those in the "married" category, the second highest ranked happiness rating was 1, being very unhappy. This reveals that there may be a slight negative correlation between being married and being happy. All in all, there are no strong correlations above, which is good news for public policy makers, who don't need to focus on marital status when trying to improve the well being of their constituents.
 
 ## Data Visualization #4: Examining how education level interacts with reported happiness levels
 
