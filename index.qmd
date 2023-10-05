@@ -26,6 +26,8 @@ library(haven)
 
 # Problem Set 4: General Social Survey Analysis
 
+## Set Up
+
 ```{r}
 
 base_url <- "https://gss.norc.org/Documents/sas/"
@@ -45,13 +47,81 @@ zip_file <- "data/GSS_sas.zip"
 unzip(zip_file, exdir= "data")
 
 gss <- (read_sas("data/GSS_sas/gss7222_r1.sas7bdat")) %>% 
-  select(YEAR,ID,WRKSTAT,MARITAL,AGE,EDUC,SEX,RACE,BORN,GRANBORN,INCOME,PARTYID,NATAID,RELIG,HAPPY,CONEDUC,MYSKILLS,HISPANIC,BALLOT,ETHWORLD1,ETHWORLD2,ETHWORLD3,
-      ETHWORLD4,ETHWORLD5,ETHWORLD6,ETHWORLD7,ETHWORLD8,ETHWORLD9) %>% 
-    filter(YEAR == 2021 | YEAR == 2022) 
+
+  select(YEAR,ID,WRKSTAT,MARITAL,AGE,EDUC,SEX,RACE,BORN,GRANBORN,INCOME,PARTYID,NATAID,RELIG,HAPPY,CONEDUC,MYSKILLS,HISPANIC,BALLOT,ETHWORLD1,ETHWORLD2,ETHWORLD3,ETHWORLD4,ETHWORLD5,ETHWORLD6,ETHWORLD7,ETHWORLD8,ETHWORLD9) %>% 
+    filter(YEAR == 2022) 
 
 clean_names(gss)
 ```
 
-The following dataset is pulled from the NORC General Social Survey for the years 2021 and 2022. Variables related to race, ethnicity, employment status, family income, immigration status, political party affiliation, perceptions of foreign spending, overall happiness, application of skills within the workplace, and ancestral continent of origin were selected.
+The following dataset is pulled from the annual NORC General Social Survey for the year 2022. The survey collects a range of data based on social characteristics and attitudes from a representative sample of the US population. We were interested in looking at exploring how particular variables, such as years of education, income, age, religion may interact with reported happiness levels of respondents.
 
-Ideas for graphs - geom_density()income and race - dot plot with income levels, colored by happiness levels - column chart of perceptions foreign percentages of responses split by continent of origin - happiness and application of skills within the workplace - 4 individual pie charts for each happiness level https://r-graph-gallery.com/piechart-ggplot2.html
+## Data Visualization #1: Comparing Happiness Levels between 2021 and 2022
+
+```{r}
+
+#Allie inserts code here
+
+```
+
+## Data Visualization #2: Investigating a potential relationship between labor force status and happiness levels
+
+```{r}
+
+
+#Creating a sub dataframe with text values for labor force status and happiness levels. 
+labfor <- 
+  gss %>% 
+    select(WRKSTAT,HAPPY) %>% 
+  mutate(
+    lab_stat = case_when(
+      WRKSTAT == 1 ~ "Full Time",
+      WRKSTAT == 2 ~ "Part Time",
+      WRKSTAT == 3 ~ "Other",
+      WRKSTAT == 4 ~ "Unemployed",
+      WRKSTAT > 4 ~ "Out of Labor Force",
+      WRKSTAT < 1 ~ "N/A",
+    ),
+    happy_text = case_when(
+      HAPPY == 1 ~ "Very Happy",
+      HAPPY == 2 ~ "Pretty Happy",
+      HAPPY == 3 ~ "Not too Happy",
+      HAPPY < 1 ~ "N/A"
+    )
+  ) %>% 
+  filter(lab_stat == "Full Time" | lab_stat == "Part Time" | lab_stat == "Unemployed", 
+         HAPPY != "N/A"
+         ) 
+
+#creating a stacked bar graph to depict the proportion of individuals that reported each happiness level, by general employment status.
+
+color_palette <- c("#E41A1C", "#377EB8", "#4DAF4A")
+
+ggplot(data = labfor,aes(x = lab_stat, fill = happy_text)) +
+   geom_bar(position = "fill") +
+  labs(title = "Happiness Levels Based on Employment Status",
+       x = "Employment Status",
+       y = "Percent of Total Responses") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  scale_fill_discrete(name = "Happiness Level")
+
+
+```
+
+## Data Visualization #3: Exploring how religious identity relates to reported happiness levels
+
+```{r}
+
+#Allie inserts code here
+
+```
+
+## Data Visualization #4: Examining how education level interacts with reported happiness levels
+
+```{r}
+
+#Alicia inserts code here
+
+```
+
+======= The following dataset is pulled from the NORC General Social Survey for the years 2021 and 2022. Variables related to race, ethnicity, employment status, family income, immigration status, political party affiliation, perceptions of foreign spending, overall happiness, application of skills within the workplace, and ancestral continent of origin were selected.
