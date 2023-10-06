@@ -26,6 +26,8 @@ library(haven)
 
 # Problem Set 4: General Social Survey Analysis
 
+## Set Up
+
 ```{r}
 
 base_url <- "https://gss.norc.org/Documents/sas/"
@@ -45,13 +47,112 @@ zip_file <- "data/GSS_sas.zip"
 unzip(zip_file, exdir= "data")
 
 gss <- (read_sas("data/GSS_sas/gss7222_r1.sas7bdat")) %>% 
-  select(YEAR,ID,WRKSTAT,MARITAL,AGE,EDUC,SEX,RACE,BORN,GRANBORN,INCOME,PARTYID,NATAID,RELIG,HAPPY,CONEDUC,MYSKILLS,HISPANIC,BALLOT,ETHWORLD1,ETHWORLD2,ETHWORLD3,
-      ETHWORLD4,ETHWORLD5,ETHWORLD6,ETHWORLD7,ETHWORLD8,ETHWORLD9) %>% 
-    filter(YEAR == 2021 | YEAR == 2022) 
+  select(YEAR,ID,WRKSTAT,MARITAL,AGE,EDUC,SEX,RACE,BORN,GRANBORN,INCOME,PARTYID,NATAID,RELIG,HAPPY,CONEDUC,MYSKILLS,HISPANIC,BALLOT,ETHWORLD1,ETHWORLD2,ETHWORLD3,ETHWORLD4,ETHWORLD5,ETHWORLD6,ETHWORLD7,ETHWORLD8,ETHWORLD9) %>% 
+    filter(YEAR == 2022) 
 
 clean_names(gss)
 ```
 
-The following dataset is pulled from the NORC General Social Survey for the years 2021 and 2022. Variables related to race, ethnicity, employment status, family income, immigration status, political party affiliation, perceptions of foreign spending, overall happiness, application of skills within the workplace, and ancestral continent of origin were selected.
+The following dataset is pulled from the NORC General Social Survey for the year 2022. The survey collects a variety of information from a representative sample of the US population. We were interested in looking at exploring how particular variables, such as years of education, income, age, religion may interact with reported happiness levels of respondents.
 
-Ideas for graphs - geom_density()income and race - dot plot with income levels, colored by happiness levels - column chart of perceptions foreign percentages of responses split by continent of origin - happiness and application of skills within the workplace - 4 individual pie charts for each happiness level https://r-graph-gallery.com/piechart-ggplot2.html
+## Data Visualization #1: Comparing Happiness Levels between 2021 and 2022
+
+```{r}
+
+#Allie inserts code here
+
+```
+
+## Data Visualization #2: Investigating a potential relationship between labor force status and happiness levels
+
+```{r}
+
+#Alicia Inserts code here
+
+color_palette <- c("#E41A1C", "#377EB8", "#4DAF4A")
+
+labfor <- 
+  gss %>% 
+    select(WRKSTAT,HAPPY) %>% 
+  mutate(
+    lab_stat = case_when(
+      WRKSTAT == 1 ~ "Full Time",
+      WRKSTAT == 2 ~ "Part Time",
+      WRKSTAT == 3 ~ "Other",
+      WRKSTAT == 4 ~ "Unemployed",
+      WRKSTAT > 4 ~ "Out of Labor Force",
+      WRKSTAT < 1 ~ "N/A",
+    ),
+    happy_text = case_when(
+      HAPPY == 1 ~ "Very Happy",
+      HAPPY == 2 ~ "Pretty Happy",
+      HAPPY == 3 ~ "Not too Happy",
+      HAPPY < 1 ~ "N/A"
+    )
+  ) %>% 
+  filter(lab_stat == "Full Time" | lab_stat == "Part Time" | lab_stat == "Unemployed", 
+         HAPPY != "N/A"
+         )
+
+ggplot(data = labfor,aes(x = lab_stat, fill = happy_text)) +
+   geom_bar(position = "fill") +
+  labs(title = "Happiness Levels Based on Employment Status",
+       x = "Employment Status",
+       y = "Percent of Total Responses") +
+  scale_y_continuous(labels = scales::percent_format(scale = 100)) +
+  scale_fill_discrete(name = "Happiness Level") + 
+  theme_minimal()
+```
+
+Jobs provide a source of purpose, direction, and financial stability for individuals, and therefore impacts general satisfaction. We hypothesized that individuals that are working full time or part time would have a higher proportion of individuals reporting moderate to high levels of happiness, compared to those that are unemployed. The above graph displays the proportion of respondents that reported that they were "Very Happy", "Pretty Happy", and "Not too Happy" based on their employment status at the time of the response. We can see that individuals working full time or part time reported similar levels of happiness. However, there is a noticeably lower proportion of individuals that reported being "very happy" and a visibly higher proportion of "Not too Happy" responses for those that were unemployed. This would appear to support our theory.
+
+## Data Visualization #3: Exploring how religious identity relates to reported happiness levels
+
+```{r}
+
+#Allie inserts code here
+
+```
+
+## Data Visualization #4: Examining how education level interacts with reported happiness levels
+
+```{r}
+
+#establishing new education data frame
+educ_in <- 
+  gss %>% 
+    select(EDUC,HAPPY) %>% 
+  mutate(
+    happy_text = case_when(
+      HAPPY == 1 ~ "Very Happy",
+      HAPPY == 2 ~ "Pretty Happy",
+      HAPPY == 3 ~ "Not too Happy",
+      HAPPY < 1 ~ "N/A"
+    )
+  ) %>% 
+  filter(happy_text != "N/A")
+
+#creating a data frame containing mean years of education by happiness level
+mu_educ <- 
+  educ_in %>% 
+    group_by(happy_text) %>% 
+    summarize(mean_educ = 
+                mean(EDUC, na.rm = TRUE)
+              )
+
+#creating an density plot with mean lines
+ggplot(data = educ_in, aes(x = EDUC, fill = happy_text))+
+  geom_density(alpha = .3) +
+  geom_vline(data = mu_educ, aes(xintercept = mean_educ, color = happy_text), linetype = "dashed", size = 1)+ 
+    scale_y_continuous(labels = scales::percent_format(scale = 100)) + 
+    labs(title = "Distribution of Years of Education Based on Happiness Level",
+         x = "Years of Education Completed",
+         y = "Percent of Total Responses",
+         color = "Mean Education Level") +
+    scale_fill_discrete(name = "Happiness Level")+
+  theme_minimal()
+
+
+```
+
+We hypothesize that individuals that higher levels of education could be associated with higher levels of happiness. The graph above shows a density plot of of individuals at each year of education, disaggregated by reported happiness level. The mean education level of individuals at each happiness level is shown by the vertical dashed lines. As shown, individuals that reported that they were "Pretty happy" or "Very happy" had similar mean educational levels, with a visible difference from individuals that reported they were "Not too happy".
