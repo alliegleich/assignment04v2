@@ -6,14 +6,31 @@ author: "Alicia Helfrich and Allie Gleich"
 format: 
   pdf:
     code-line-numbers: false
+    latex:
+      latex:
+          preamble: |
+            \usepackage{listings}
+            \lstset{
+              basicstyle=\small\ttfamily,
+              breaklines=true,
+              breakatwhitespace=true,
+              frame=single,
+              numbers=left,
+              numberstyle=\tiny,
+              captionpos=b,
+            }
+      packages:
+        listings:true
   html: 
     code-line-numbers: false
     self-contained: true
 urlcolor: blue
 geometry: margin=1.5in
+message: false
+eval: true
 ---
 
-```{r}
+```{r,message=FALSE,error=FALSE,warning=FALSE}
 
 #\| label: rmarkdown-setup #\| echo: false #\| include: false
 
@@ -27,9 +44,9 @@ library(haven)
 
 ## Set Up and Introduction
 
-The following data set is pulled from the annual NORC General Social Survey for the year 2022. Each year, the survey collects a variety of information from a representative sample of the US population to understand attitudes and perceptions of a variety of social issues. We were interested in looking exploring reported happiness levels of individuals, and how this variable interacted with religion, employment status, and educational levels.
+The following data set is pulled from the annual NORC General Social Survey for the year 2022. Each year, the survey collects a variety of information from a representative sample of the US population to understand attitudes and perceptions on a range of social issues. We were interested in looking exploring reported happiness levels of individuals, and how this variable interacted with religion, employment status, and educational levels.The data set is publicly available at the NORC website through [this link](https://gssdataexplorer.norc.org/home).
 
-```{r}
+```{r,message=FALSE,error=FALSE,warning=FALSE}
 
 base_url <- "https://gss.norc.org/Documents/sas/"
 week_url <- "GSS_sas.zip"
@@ -57,15 +74,13 @@ gss <- (read_sas("data/GSS_sas/gss7222_r1.sas7bdat")) %>%
 
 color_palette <- c("#E41A1C", "#377EB8", "#4DAF4A")
 
-color_palette_discrete <- c(1== "#E41A1C", 2 == "#377EB8",3 == "#4DAF4A")
-
 clean_names(gss)
 
 ```
 
 ## Data Visualization #1: Exploring Happiness Levels in 2022
 
-```{r}
+```{r,message=FALSE,error=FALSE,warning=FALSE}
 
 gss$color_group <- cut(gss$HAPPY, breaks = c(.5,1.5,2.5,3.5),
                        labels = c("Not too happy","Pretty happy","Very happy"
@@ -92,11 +107,11 @@ ggplot(data = gss, aes(x = HAPPY, fill = color_group)) +
 
 ```
 
-First, we sought to understand overall reported happiness levels. The graph shows that the majority of the respondents ranked their happiness at a 2 ("Pretty happy") out of 3 ("Very happy"). The least amount of people ranked themselves at 1, coded to represent "Not Too Happy", which would indicate that people are generally happy. To continue making public policy decisions that are targeted at improving people's overall happiness/wellbeing, we should further explore the factors that appear to have an association with happiness levels.
+First, we sought to understand overall reported happiness levels. The graph shows that the majority of the respondents ranked their happiness at a 2 ("Pretty happy") out of 3 ("Very happy"). The least amount of people ranked themselves at 1, coded to represent "Not Too Happy", which would indicate that people are generally happy. To continue making public policy decisions that are targeted at improving people's overall happiness/wellbeing, we should further explore the factors that could have an association with happiness levels.
 
 ## Data Visualization #2: Investigating a potential relationship between labor force status and happiness levels
 
-```{r}
+```{r,message=FALSE,error=FALSE,warning=FALSE}
 
 labfor <- 
   gss %>% 
@@ -134,11 +149,13 @@ ggplot(data = labfor,aes(x = lab_stat, fill = happy_text)) +
 
 ```
 
-Jobs provide a source of purpose, direction, and financial stability for individuals, and therefore impacts general satisfaction. We hypothesized that individuals that are working full time or part time would have a higher proportion of individuals reporting moderate to high levels of happiness, compared to those that are unemployed. The above graph displays the proportion of respondents that reported that they were "Very Happy", "Pretty Happy", and "Not too Happy" based on their employment status at the time of the response. We can see that individuals working full time or part time reported similar levels of happiness. However, there is a noticeably lower proportion of individuals that reported being "very happy" and a visibly higher proportion of "Not too Happy" responses for those that were unemployed. This would appear to support our theory.
+Jobs provide a source of purpose, direction, and financial stability for individuals, and therefore impacts general life satisfaction. We hypothesized that individuals that are working full time or part time would have a higher proportion of individuals reporting moderate to high levels of happiness, compared to those that are unemployed. The above graph displays the proportion of respondents that reported that they were "Very Happy", "Pretty Happy", and "Not too Happy" based on their employment status at the time of the response. We can see that individuals working full time or part time reported similar levels of happiness. However, there is a noticeably lower proportion of individuals that reported being "very happy" and a visibly higher proportion of "Not too Happy" responses for those that were unemployed. This would appear to support our theory.
 
 ## Data Visualization #3: Exploring how religious identity relates to reported happiness levels
 
-```{r}
+```{r,message=FALSE,error=FALSE,warning=FALSE}
+
+custom_labels <- c("1" = "Not too happy", "2" = "Somewhat happy", "3" = "Very happy")
 
 gss_marital_happy <- gss %>%
   group_by(HAPPY, MARITAL) %>%
@@ -164,23 +181,22 @@ ggplot(aes(x = MARITAL, y = HAPPY)) +
     title = "Exploring relationship between marital status and happiness",
     subtitle = "Reported happiness relatively even across marriage statuses",
       "How Marital Status Impacts Happiness",
-    x = "Marital Status",
-    y = "Happiness Level",
-    caption = "NORC 2022 General Social Survey",
-    fill = "Happiness Level") +
+     x = "Marital Status",
+       y = "Happiness Level",
+      caption = "NORC 2022 General Social Survey",
+     fill = "Happiness Level") +
     scale_color_manual( name = "Happiness Level",
-    values = c("1" = "#E41A1C", "2" = "#377EB8", "3" = "#4DAF4A")
-  )
+      values = c("1" = "#E41A1C", "2" = "#377EB8", "3" = "#4DAF4A"))
 
 
 
 ```
 
-The above graph shows that for all marital statuses, the majority of respondents ranked their happiness at a 2, or "pretty happy". This aligns with Data Visualization #1, which shows that the median happiness level in the General Social Survey is a 2. An interesting finding, however, is that the plot above reveals that for all marital statuses, except for "married", the second most selected happiness rating was a 3, meaning very happy. For those in the "married" category, the second highest ranked happiness rating was 1, being very unhappy. This reveals that there may be a slight negative correlation between being married and being happy. All in all, there are no strong correlations above, which is good news for public policy makers, who don't need to focus on marital status when trying to improve the well being of their constituents.
+The above graph shows that for all marital statuses, the majority of respondents ranked their happiness at a 2, or "pretty happy". This aligns with Data Visualization #1, which shows that the median happiness level in the General Social Survey is a 2. An interesting finding, however, is that the plot above reveals that for all marital statuses, except for "married", the second most selected happiness rating was a 3, meaning very happy. For those in the "married" category, the second highest ranked happiness rating was 1, being very unhappy. This reveals that there may be a potential, slight, negative correlation between being married and being happy. That being said, there appears to be no strong association, which is good news for public policy makers, who don't need to focus on marital status when trying to improve the well being of their constituents.
 
 ## Data Visualization #4: Examining how education level interacts with reported happiness levels
 
-```{r}
+```{r,message=FALSE,error=FALSE,warning=FALSE}
 
 #establishing new education data frame
 educ_in <- 
@@ -221,4 +237,4 @@ ggplot(data = educ_in, aes(x = EDUC, fill = happy_text))+
 
 ```
 
-We hypothesize that individuals that higher levels of education could be associated with higher levels of happiness. The graph above shows a density plot of of individuals at each year of education, disaggregated by reported happiness level. The mean education level of individuals at each happiness level is shown by the vertical dashed lines. As shown, individuals that reported that they were "Pretty happy" or "Very happy" had similar mean educational levels, with a visible difference from individuals that reported they were "Not too happy".This could indicate a potential positive correlation between educational level and happiness, but additional investigation should be done to determine that the statistical significance of this relationship, if at all.
+We hypothesize that individuals that higher levels of education could be associated with higher levels of happiness, given that higher levels of education have been associated with higher quality work and can be a source of personal fulfillment and accomplishment. The graph above shows a density plot of of individuals at each year of education, disaggregated by reported happiness level. The mean education level of individuals at each happiness level is shown by the vertical dashed lines. As shown, individuals that reported that they were "Pretty happy" or "Very happy" had similar mean educational levels, with a visible difference from individuals that reported they were "Not too happy".This could indicate a potential positive correlation between educational level and happiness, but additional investigation should be done to determine that the statistical significance of this relationship, if at all.
